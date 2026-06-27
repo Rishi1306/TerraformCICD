@@ -8,23 +8,50 @@ trigger:
 
 pool: ado_agent_rike
 
-steps:
-- task: TerraformTask@5
-  displayName: Init Task
-  inputs:
-    provider: 'azurerm'
-    command: 'init'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/'
-    backendServiceArm: 'svc-rike'
-    backendAzureRmOverrideSubscriptionID: '5b9f49a3-8bda-49fa-88c0-baf31ef2f4f3'
-    backendAzureRmResourceGroupName: 'rike-rg-1'
-    backendAzureRmStorageAccountName: 'rikestorage13'
-    backendAzureRmContainerName: 'pipedrum'
-    backendAzureRmKey: 'pipedrum.tfstate'
-- task: TerraformTask@5
-  displayName: Plan task
-  inputs:
-    provider: 'azurerm'
-    command: 'plan'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/'
-    environmentServiceNameAzureRM: 'svc-rike'
+stages:
+- stage: Build Stage
+  displayName: Build
+  jobs: 
+  - job: cmdcommand
+    displayName: CMD command
+    steps: 
+    - task: CmdLine@2
+      inputs:
+        script: 'echo Hello world'
+
+  - job: TerraformInitPlan
+    displayName: Terraform Init and Plan Job
+    steps:
+    - task: TerraformTask@5
+      displayName: Init Task
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/'
+        backendServiceArm: 'svc-rike'
+        backendAzureRmOverrideSubscriptionID: '5b9f49a3-8bda-49fa-88c0-baf31ef2f4f3'
+        backendAzureRmResourceGroupName: 'rike-rg-1'
+        backendAzureRmStorageAccountName: 'rikestorage13'
+        backendAzureRmContainerName: 'pipedrum'
+        backendAzureRmKey: 'pipedrum.tfstate'
+
+    - task: TerraformTask@5
+      displayName: Plan task
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/'
+        environmentServiceNameAzureRM: 'svc-rike'
+
+- stage: Scanning
+  displayName: Scanning Stage
+  jobs: 
+  - job: TFSecScanningJob
+    displayName: TFSEC Scanning Wala Job
+    pool: ado_agent_rike
+    steps:
+    - task: tfsec@1
+      inputs:
+        version: 'v1.26.0'
+        dir: '$(System.DefaultWorkingDirectory)/'
+
