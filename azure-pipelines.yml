@@ -6,7 +6,7 @@
 trigger:
 - main
 
-pool: ado_agent-rike
+pool: ado_agent_rike
 
 steps:
   - task: TerraformTask@5
