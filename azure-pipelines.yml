@@ -18,8 +18,8 @@ steps:
     backendServiceArm: 'svc-rike'
     backendAzureRmResourceGroupName: 'rike-rg-1'
     backendAzureRmStorageAccountName: 'rikestorage13'
-    backendAzureRmContainerName: 'storedrum'
-    backendAzureRmKey: 'storedrum.tfstate'
+    backendAzureRmContainerName: 'pipedrum'
+    backendAzureRmKey: 'pipedrum.tfstate'
 - task: TerraformTask@5
   displayName: Plan task
   inputs:

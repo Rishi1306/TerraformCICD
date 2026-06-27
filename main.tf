@@ -8,8 +8,8 @@ terraform {
   backend "azurerm" {
     resource_group_name = "rike-rg-1"
     storage_account_name = "rikestorage13"
-    container_name = "storedrum"
-    key = "storedrum.tfstate"
+    container_name = "pipedrum"
+    key = "pipedrum.tfstate"
   }
 }
 
