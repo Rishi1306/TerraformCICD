@@ -54,18 +54,6 @@ stages:
     displayName: Terraform Apply Job
     pool: ado_agent_rike
     steps:
-    - task: ManualValidation@0
-      displayName: Approve Terraform Apply
-      timeoutInMinutes: 60
-      inputs:
-        notifyUsers: |
-          $(Build.RequestedForEmail)
-        instructions: |
-          Review the Terraform plan artifact before approving.
-          Branch: $(Build.SourceBranchName)
-          Triggered by: $(Build.RequestedFor)
-          Build: $(Build.BuildNumber)
-          Approve only if the plan output looks correct.
 
     - task: DownloadPipelineArtifact@2
       displayName: Download Terraform Plan
