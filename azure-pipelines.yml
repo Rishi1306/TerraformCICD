@@ -4,7 +4,8 @@
 # https://aka.ms/yaml
 
 trigger:
-- manual
+- feature/*
+- main
 
 pool: ado_agent_rike
 
