@@ -13,13 +13,6 @@ stages:
 - stage: BuildStage
   displayName: Build
   jobs: 
-  - job: cmdcommand
-    displayName: CMD command
-    steps: 
-    - task: CmdLine@2
-      inputs:
-        script: 'echo Hello world'
-
   - job: TerraformInitPlan
     displayName: Terraform Init and Plan Job
     steps:
@@ -43,16 +36,29 @@ stages:
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/'
         environmentServiceNameAzureRM: 'svc-rike'
+        commandOptions: '-out=$(Build.ArtifactStagingDirectory)/tfplan'
+
+    - task: PublishPipelineArtifact@1                       # FIX 3 cont: publish plan for Deploy stage to consume
+      displayName: Publish Terraform Plan
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)/tfplan'
+        artifact: 'terraform-plan'
 
 - stage: DeployStage
   displayName: Deploy
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+  dependsOn: BuildStage
+  condition: and(succeeded('BuildStage'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   jobs:
 
   - job: TerraformApply
     displayName: Terraform Apply Job
-    pool: ado_agent_rike
     steps:
+
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Terraform Plan
+      inputs:
+        artifact: 'terraform-plan'
+        path: '$(Pipeline.Workspace)/terraform-plan'
 
     - task: TerraformTask@5
       displayName: Terraform Init (Deploy)
@@ -74,16 +80,3 @@ stages:
         command: 'apply'
         workingDirectory: '$(System.DefaultWorkingDirectory)/'
         environmentServiceNameAzureRM: 'svc-rike'
-
-# - stage: Scanning
-#   displayName: Scanning Stage
-#   jobs: 
-#   - job: TFSecScanningJob
-#     displayName: TFSEC Scanning Wala Job
-#     pool: ado_agent_rike
-#     steps:
-#     - task: tfsec@1
-#       inputs:
-#         version: 'v1.26.0'
-#         dir: '$(System.DefaultWorkingDirectory)/'
-
