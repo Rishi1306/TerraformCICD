@@ -47,12 +47,11 @@ stages:
 - stage: DeployStage
   displayName: Deploy
   dependsOn: BuildStage
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+  condition: and(succeeded('BuildStage'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   jobs:
 
   - job: TerraformApply
     displayName: Terraform Apply Job
-    pool: ado_agent_rike
     steps:
 
     - task: DownloadPipelineArtifact@2
