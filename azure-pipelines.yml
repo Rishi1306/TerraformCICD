@@ -1,0 +1,29 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool: ado_agent-rike
+
+steps:
+  - task: TerraformTask@5
+    displayName: Init Task
+    inputs:
+      provider: 'azurerm'
+      command: 'init'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/'
+      backendServiceArm: 'svc-rike'
+      backendAzureRmResourceGroupName: 'rike-rg-1'
+      backendAzureRmStorageAccountName: 'rikestorage13'
+      backendAzureRmContainerName: 'storedrum'
+      backendAzureRmKey: 'storedrum.tfstate'
+  - task: TerraformTask@5
+    displayName: Plan task
+    inputs:
+      provider: 'azurerm'
+      command: 'plan'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/'
+      environmentServiceNameAzureRM: 'svc-rike'
