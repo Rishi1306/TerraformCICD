@@ -9,21 +9,21 @@ trigger:
 pool: ado_agent_rike
 
 steps:
-  - task: TerraformTask@5
-    displayName: Init Task
-    inputs:
-      provider: 'azurerm'
-      command: 'init'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/'
-      backendServiceArm: 'svc-rike'
-      backendAzureRmResourceGroupName: 'rike-rg-1'
-      backendAzureRmStorageAccountName: 'rikestorage13'
-      backendAzureRmContainerName: 'storedrum'
-      backendAzureRmKey: 'storedrum.tfstate'
-  - task: TerraformTask@5
-    displayName: Plan task
-    inputs:
-      provider: 'azurerm'
-      command: 'plan'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/'
-      environmentServiceNameAzureRM: 'svc-rike'
+- task: TerraformTask@5
+  displayName: Init Task
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/'
+    backendServiceArm: 'svc-rike'
+    backendAzureRmResourceGroupName: 'rike-rg-1'
+    backendAzureRmStorageAccountName: 'rikestorage13'
+    backendAzureRmContainerName: 'storedrum'
+    backendAzureRmKey: 'storedrum.tfstate'
+- task: TerraformTask@5
+  displayName: Plan task
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/'
+    environmentServiceNameAzureRM: 'svc-rike'
