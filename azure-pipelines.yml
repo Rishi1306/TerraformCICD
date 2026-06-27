@@ -4,14 +4,11 @@
 # https://aka.ms/yaml
 
 trigger:
-- main
+- manual
 
 pool: ado_agent_rike
 
 steps:
-- task: TerraformInstaller@1
-  inputs:
-    terraformVersion: 'latest'
 - task: TerraformTask@5
   displayName: Init Task
   inputs:
