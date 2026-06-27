@@ -1,4 +1,18 @@
-resource "resource_group_name" "rg-pipe-1" {
-  name = "rike-pipe-rg-1"
-  location = "centralindia"
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "4.79.0"
+    }
+  }
+  backend "azurerm" {
+    resource_group_name = "rike-rg-1"
+    storage_account_name = "rikestorage13"
+    container_name = "pipedrum"
+    key = "pipedrum.tfstate"
+  }
+}
+
+provider "azurerm" {
+  features {}
 }
