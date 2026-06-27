@@ -48,19 +48,8 @@ stages:
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
   jobs:
 
-  - job: ManualValidation
-    displayName: Manual Validation 
-    pool: server
-    steps:
-    - task: ManualValidation@1
-      inputs:
-        notifyUsers: 'rishikejriwalrk@gmail.com'
-        approvers: 'rishikejriwalrk@gmail.com'
-        instructions: 'Please give a approval.'
-
   - job: TerraformApply
     displayName: Terraform Apply Job
-    dependsOn: ManualValidation
     pool: ado_agent_rike
     steps:
 
