@@ -19,6 +19,7 @@ steps:
     command: 'init'
     workingDirectory: '$(System.DefaultWorkingDirectory)/'
     backendServiceArm: 'svc-rike'
+    backendAzureRmOverrideSubscriptionID: '5b9f49a3-8bda-49fa-88c0-baf31ef2f4f3'
     backendAzureRmResourceGroupName: 'rike-rg-1'
     backendAzureRmStorageAccountName: 'rikestorage13'
     backendAzureRmContainerName: 'pipedrum'
