@@ -43,6 +43,48 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)/'
         environmentServiceNameAzureRM: 'svc-rike'
 
+- stage: DeployStage
+  displayName: Deploy
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+  jobs:
+
+  - job: ManualValidation
+    displayName: Manual Validation 
+    pool: server
+    steps:
+    - task: ManualValidation@1
+      inputs:
+        notifyUsers: 'rishikejriwalrk@gmail.com'
+        approvers: 'rishikejriwalrk@gmail.com'
+        instructions: 'Please give a approval.'
+
+  - job: TerraformApply
+    displayName: Terraform Apply Job
+    dependsOn: ManualValidation
+    pool: ado_agent_rike
+    steps:
+
+    - task: TerraformTask@5
+      displayName: Terraform Init (Deploy)
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/'
+        backendServiceArm: 'svc-rike'
+        backendAzureRmOverrideSubscriptionID: '5b9f49a3-8bda-49fa-88c0-baf31ef2f4f3'
+        backendAzureRmResourceGroupName: 'rike-rg-1'
+        backendAzureRmStorageAccountName: 'rikestorage13'
+        backendAzureRmContainerName: 'pipedrum'
+        backendAzureRmKey: 'pipedrum.tfstate'
+
+    - task: TerraformTask@5
+      displayName: Terraform Apply
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/'
+        environmentServiceNameAzureRM: 'svc-rike'
+
 # - stage: Scanning
 #   displayName: Scanning Stage
 #   jobs: 
