@@ -80,3 +80,4 @@ stages:
         command: 'apply'
         workingDirectory: '$(System.DefaultWorkingDirectory)/'
         environmentServiceNameAzureRM: 'svc-rike'
+        commandOptions: '$(Pipeline.Workspace)/terraform-plan/tfplan'
