@@ -14,6 +14,6 @@ resource "azurerm_resource_group" "pipe-rg-3" {
 }
 
 resource "azurerm_resource_group" "pipe-rg-4" {
-  name = "rike-pipe-3-rg"
+  name = "rike-pipe-4-rg"
   location = "centralindia"
 }
