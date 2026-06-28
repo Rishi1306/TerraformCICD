@@ -7,7 +7,9 @@ trigger:
 pool: ado_agent_rike
 
 variables:
-  workDir: '$(System.DefaultWorkingDirectory)/'
+  - group: terraform-backend-vars
+  - name: workDir
+    value: '$(System.DefaultWorkingDirectory)/'
 
 stages:
 - stage: BuildStage
