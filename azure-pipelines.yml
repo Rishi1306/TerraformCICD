@@ -1,13 +1,13 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+name: 'Terraform Azure Infrastructure CI/CD Pipeline'
 
 trigger:
 - feature/*
 - main
 
 pool: ado_agent_rike
+
+variables:
+  workDir: '$(System.DefaultWorkingDirectory)/'
 
 stages:
 - stage: BuildStage
@@ -21,11 +21,11 @@ stages:
       inputs:
         provider: 'azurerm'
         command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/'
+        workingDirectory: $(workDir)
         backendServiceArm: 'svc-rike'
-        backendAzureRmOverrideSubscriptionID: '5b9f49a3-8bda-49fa-88c0-baf31ef2f4f3'
+        backendAzureRmOverrideSubscriptionID: $(ARM_SUBSCRIPTION_ID)
         backendAzureRmResourceGroupName: 'rike-rg-1'
-        backendAzureRmStorageAccountName: 'rikestorage13'
+        backendAzureRmStorageAccountName: $(TF_BACKEND_STORAGE)
         backendAzureRmContainerName: 'pipedrum'
         backendAzureRmKey: 'pipedrum.tfstate'
 
@@ -34,7 +34,7 @@ stages:
       inputs:
         provider: 'azurerm'
         command: 'validate'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/'
+        workingDirectory: $(workDir)
         environmentServiceNameAzureRM: 'svc-rike'
 
     - task: TerraformTask@5
@@ -42,7 +42,7 @@ stages:
       inputs:
         provider: 'azurerm'
         command: 'plan'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/'
+        workingDirectory: $(workDir)
         environmentServiceNameAzureRM: 'svc-rike'
         commandOptions: '-out=$(Build.ArtifactStagingDirectory)/tfplan'
 
@@ -85,11 +85,11 @@ stages:
       inputs:
         provider: 'azurerm'
         command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/'
+        workingDirectory: $(workDir)
         backendServiceArm: 'svc-rike'
-        backendAzureRmOverrideSubscriptionID: '5b9f49a3-8bda-49fa-88c0-baf31ef2f4f3'
+        backendAzureRmOverrideSubscriptionID: $(ARM_SUBSCRIPTION_ID)
         backendAzureRmResourceGroupName: 'rike-rg-1'
-        backendAzureRmStorageAccountName: 'rikestorage13'
+        backendAzureRmStorageAccountName: $(TF_BACKEND_STORAGE)
         backendAzureRmContainerName: 'pipedrum'
         backendAzureRmKey: 'pipedrum.tfstate'
 
@@ -98,6 +98,6 @@ stages:
       inputs:
         provider: 'azurerm'
         command: 'apply'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/'
+        workingDirectory: $(workDir)
         environmentServiceNameAzureRM: 'svc-rike'
         commandOptions: '$(Pipeline.Workspace)/terraform-plan/tfplan'
