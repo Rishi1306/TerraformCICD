@@ -23,14 +23,14 @@ stages:
         command: 'init'
         workingDirectory: $(workDir)
         backendServiceArm: 'svc-rike'
-        backendAzureRmOverrideSubscriptionID: $(ARM_SUBSCRIPTION_ID)
+        backendAzureRmOverrideSubscriptionID: '$(ARM_SUBSCRIPTION_ID)'
         backendAzureRmResourceGroupName: 'rike-rg-1'
-        backendAzureRmStorageAccountName: $(TF_BACKEND_STORAGE)
+        backendAzureRmStorageAccountName: '$(TF_BACKEND_STORAGE)'
         backendAzureRmContainerName: 'pipedrum'
         backendAzureRmKey: 'pipedrum.tfstate'
 
     - task: TerraformTask@5
-      displayName: Validate Task                            # NEW: catches HCL syntax errors early
+      displayName: Validate Task                            
       inputs:
         provider: 'azurerm'
         command: 'validate'
@@ -46,7 +46,7 @@ stages:
         environmentServiceNameAzureRM: 'svc-rike'
         commandOptions: '-out=$(Build.ArtifactStagingDirectory)/tfplan'
 
-    - task: PublishPipelineArtifact@1                       # FIX 3 cont: publish plan for Deploy stage to consume
+    - task: PublishPipelineArtifact@1                   
       displayName: Publish Terraform Plan
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)/tfplan'
@@ -67,7 +67,7 @@ stages:
 - stage: DeployStage
   displayName: Deploy
   dependsOn: SecurityStage
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+  condition: and(succeeded('SecurityStage'),eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   jobs:
 
   - job: TerraformApply
@@ -87,9 +87,9 @@ stages:
         command: 'init'
         workingDirectory: $(workDir)
         backendServiceArm: 'svc-rike'
-        backendAzureRmOverrideSubscriptionID: $(ARM_SUBSCRIPTION_ID)
+        backendAzureRmOverrideSubscriptionID: '$(ARM_SUBSCRIPTION_ID)'
         backendAzureRmResourceGroupName: 'rike-rg-1'
-        backendAzureRmStorageAccountName: $(TF_BACKEND_STORAGE)
+        backendAzureRmStorageAccountName: '$(TF_BACKEND_STORAGE)'
         backendAzureRmContainerName: 'pipedrum'
         backendAzureRmKey: 'pipedrum.tfstate'
 
