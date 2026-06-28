@@ -30,6 +30,14 @@ stages:
         backendAzureRmKey: 'pipedrum.tfstate'
 
     - task: TerraformTask@5
+      displayName: Validate Task                            # NEW: catches HCL syntax errors early
+      inputs:
+        provider: 'azurerm'
+        command: 'validate'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/'
+        environmentServiceNameAzureRM: 'svc-rike'
+
+    - task: TerraformTask@5
       displayName: Plan task
       inputs:
         provider: 'azurerm'
@@ -44,10 +52,22 @@ stages:
         targetPath: '$(Build.ArtifactStagingDirectory)/tfplan'
         artifact: 'terraform-plan'
 
+- stage: SecurityStage
+  displayName: Security Scan
+  dependsOn: BuildStage
+  jobs:
+  - job: CheckovScan
+    displayName: Checkov IaC Scan
+    steps:
+    - script: |
+        pip install checkov
+        checkov -d $(System.DefaultWorkingDirectory) --framework terraform
+      displayName: Run Checkov Scan
+
 - stage: DeployStage
   displayName: Deploy
-  dependsOn: BuildStage
-  condition: and(succeeded('BuildStage'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  dependsOn: SecurityStage
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
   jobs:
 
   - job: TerraformApply
